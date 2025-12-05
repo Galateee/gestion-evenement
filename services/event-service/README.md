@@ -1,98 +1,102 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📅 Service de Gestion des Événements (Event Service)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Ce microservice gère la création, la modification, la récupération et la
+suppression des événements. Il est construit avec **NestJS** et **PostgreSQL**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Démarrage Rapide
 
-## Description
+### ✔️ Prérequis
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+-   Docker & Docker Compose installés
+-   Un fichier `.env` à la racine (voir `.env.example`)
 
-## Project setup
+## 🛠 Commandes Principales
 
-```bash
-$ npm install
+### 1. 🔄 Reconstruire uniquement le service "Event" (Développement)
+
+``` bash
+docker-compose up -d --build event-service
 ```
 
-## Compile and run the project
+### 2. Voir les logs en temps réel
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+``` bash
+docker-compose logs -f event-service
 ```
 
-## Run tests
+### 3. Arrêter le service
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+``` bash
+docker-compose stop event-service
 ```
 
-## Deployment
+## 📍 Accès API
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+-   Le service tourne sur le port **3001**
+-   Documentation rapide : `http://localhost:3001/`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 📚 Endpoints Disponibles (`/events`)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+  GET       `/events`       Liste tous les événements (supporte `?search=xyz`)
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+  GET       `/events/:id`   Détails d'un événement par ID
 
-## Resources
+  POST      `/events`       Créer un événement
 
-Check out a few resources that may come in handy when working with NestJS:
+  PATCH     `/events/:id`   Mettre à jour un événement
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+  DELETE    `/events/:id`   Supprimer un événement
 
-## Support
+## 🏗 Structure Docker
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+-   **Container Name :** `event-service`
+-   **Port Externe :** `3001`
+-   **Base de données :** `postgres-events`
+    -   Port interne : `5432`\
+    -   Port externe : `5433`
 
-## Stay in touch
+---
+# Documentation : Connexion pgAdmin vers Docker PostgreSQL
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Ce document décrit la procédure pour connecter une instance locale de pgAdmin à une base de données PostgreSQL tournant dans un conteneur Docker.
 
-## License
+## 1. Les paramètres de connexion
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Dans **pgAdmin**, suivez ce chemin :
+1. Clic droit sur **Servers**
+2. Sélectionnez **Register** > **Server...**
+
+### Onglet "General"
+
+* **Name** : `Docker - Events` (ou tout autre nom de votre choix pour identifier ce serveur).
+
+### Onglet "Connection"
+
+C'est ici que la configuration réseau se joue. Il est impératif d'utiliser le **port externe** défini dans votre fichier `docker-compose.yml`.
+
+* **Host name/address** : `localhost`
+* **Port** : `5433`
+* **Maintenance database** : `postgres` (Laisser par défaut)
+* **Username** : `DATABASE_USER` (dans le .env)
+* **Password** : `DATABASE_PASSWORD` (dans le .env)
+
+> **Pourquoi le port 5433 ?**
+> Dans la configuration `docker-compose`, il est indiqué le mapping `"5433:5432"`.
+> * **5432** est le port interne (à l'intérieur du conteneur Docker).
+> * **5433** est le port externe (celui accessible depuis votre machine Windows/hôte).
+
+---
+
+## 2. Vérification
+
+Une fois les paramètres enregistrés et la connexion établie :
+
+1. Déroulez le serveur **Docker - Events** dans la barre latérale.
+2. Déroulez **Databases**.
+3. Vous devriez voir apparaître **`event_db`** dans la liste.
+
+Si la base de données apparaît, la connexion est réussie.
+
+
+![alt text](image.png)
+![alt text](image-1.png)

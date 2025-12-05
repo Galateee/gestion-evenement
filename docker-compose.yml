@@ -139,6 +139,8 @@ services:
       RABBITMQ_QUEUE: event-service
     ports:
       - "3001:3001"
+    volumes:
+    - ./services/event-service:/usr/src/app
     depends_on:
       postgres-events:
         condition: service_healthy

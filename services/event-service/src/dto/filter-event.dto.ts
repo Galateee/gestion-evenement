@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
-import { EventCategory, EventStatus } from '../../shared/enums/index.js';
+import { EventCategory, EventStatus } from './../../../../shared/enums/index';
 
 export class FilterEventDto {
   @IsOptional()
