@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EventCategory, EventStatus } from '../../shared/enums/index.js';
+import { EventCategory, EventStatus } from './../../../../shared/enums/index';
 
 @Entity('events')
 export class Event {

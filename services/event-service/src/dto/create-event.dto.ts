@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsDateString, IsNumber, IsOptional, Min, MaxLength } from 'class-validator';
-import { EventCategory } from '../../shared/enums/index.js';
+import { EventCategory } from './../../../../shared/enums/index';
 
 export class CreateEventDto {
   @IsString()
