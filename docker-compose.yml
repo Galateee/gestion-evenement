@@ -1,0 +1,264 @@
+version: '3.8'
+
+services:
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-user}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-password}
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - event-network
+
+  # Databases
+  postgres-events:
+    image: postgres:15
+    container_name: postgres-events
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_DB: event_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-events-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pguser} -d event_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - event-network
+
+  postgres-tickets:
+    image: postgres:15
+    container_name: postgres-tickets
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_DB: ticket_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-tickets-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pguser} -d ticket_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - event-network
+
+  postgres-payments:
+    image: postgres:15
+    container_name: postgres-payments
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_DB: payment_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-payments-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pguser} -d payment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - event-network
+
+  postgres-users:
+    image: postgres:15
+    container_name: postgres-users
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_DB: user_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-users-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pguser} -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - event-network
+
+  # Microservices
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: DockerFile
+    container_name: user-service
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      DATABASE_HOST: postgres-users
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-pguser}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      DATABASE_NAME: user_db
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+      JWT_EXPIRES_IN: 7d
+      BCRYPT_ROUNDS: 10
+    ports:
+      - "3005:3005"
+    depends_on:
+      postgres-users:
+        condition: service_healthy
+    networks:
+      - event-network
+    restart: unless-stopped
+
+  event-service:
+    build:
+      context: .
+      dockerfile: services/event-service/DockerFile
+    container_name: event-service
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_HOST: postgres-events
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-pguser}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      DATABASE_NAME: event_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
+      RABBITMQ_QUEUE: event-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres-events:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - event-network
+    restart: unless-stopped
+
+  ticket-service:
+    build:
+      context: ./services/ticket-service
+      dockerfile: DockerFile
+    container_name: ticket-service
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_HOST: postgres-tickets
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-pguser}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      DATABASE_NAME: ticket_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
+      RABBITMQ_QUEUE: ticket-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres-tickets:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - event-network
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: DockerFile
+    container_name: payment-service
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DATABASE_HOST: postgres-payments
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-pguser}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      DATABASE_NAME: payment_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
+      RABBITMQ_QUEUE: payment-service
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_dummy}
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres-payments:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - event-network
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: DockerFile
+    container_name: notification-service
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
+      RABBITMQ_QUEUE: notification-service
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@event-platform.com}
+    ports:
+      - "3004:3004"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - event-network
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      EVENT_SERVICE_URL: http://event-service:3001
+      TICKET_SERVICE_URL: http://ticket-service:3002
+      PAYMENT_SERVICE_URL: http://payment-service:3003
+      NOTIFICATION_SERVICE_URL: http://notification-service:3004
+      USER_SERVICE_URL: http://user-service:3005
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+      JWT_EXPIRES_IN: 7d
+    depends_on:
+      - user-service
+      - event-service
+      - ticket-service
+      - payment-service
+      - notification-service
+    networks:
+      - event-network
+    restart: unless-stopped
+
+networks:
+  event-network:
+    driver: bridge
+
+volumes:
+  postgres-events-data:
+  postgres-tickets-data:
+  postgres-payments-data:
+  postgres-users-data:
