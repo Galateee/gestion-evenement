@@ -98,5 +98,19 @@ Une fois les paramètres enregistrés et la connexion établie :
 Si la base de données apparaît, la connexion est réussie.
 
 
+exemple body attendu pour créer un évenement:  
+```json
+{
+"title": "Conférence IA 2025",
+"description": "Une journée dédiée à l'intelligence artificielle et au développement web.",
+"category": "CONFERENCE",
+"organizerId": "1d72fcb2-9c52-4aa9-9be2-82c24be23319",
+"startDate": "2025-01-25T09:00:00.000Z",
+"endDate": "2025-01-25T18:00:00.000Z",
+"location": "Paris",
+"capacity": 150
+}
+```
+réponse:  
 ![alt text](image.png)
 ![alt text](image-1.png)
