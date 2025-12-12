@@ -81,8 +81,8 @@ services:
     image: postgres:15
     container_name: postgres-users
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-pguser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_USER: ${DATABASE_USER:-root}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-root}
       POSTGRES_DB: user_db
     ports:
       - "5436:5432"
