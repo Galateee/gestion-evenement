@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsDateString, IsNumber, IsOptional, Min, MaxLength } from 'class-validator';
-import { EventCategory, EventStatus } from '../../shared/enums/index.js';
+import { EventCategory, EventStatus } from './../../../../shared/enums/index';
 
 export class UpdateEventDto {
   @IsOptional()
