@@ -104,7 +104,6 @@ exemple body attendu pour créer un évenement:
 "title": "Conférence IA 2025",
 "description": "Une journée dédiée à l'intelligence artificielle et au développement web.",
 "category": "CONFERENCE",
-"organizerId": "1d72fcb2-9c52-4aa9-9be2-82c24be23319",
 "startDate": "2025-01-25T09:00:00.000Z",
 "endDate": "2025-01-25T18:00:00.000Z",
 "location": "Paris",

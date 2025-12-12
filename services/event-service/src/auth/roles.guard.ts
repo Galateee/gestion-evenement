@@ -9,7 +9,7 @@ import { UserRole } from '../../../../shared/enums';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles =
@@ -25,15 +25,16 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
-    // DEMO : user test
-    const user =
-      request.user ||
-      ({
+    // Si pas d'user (pas de token), on INJECTE le user de démo DANS LA REQUÊTE
+    if (!request.user) {
+      request.user = {
         id: 'demo-user',
         role: UserRole.ADMIN,
-      } as any);
+      };
+    }
 
-    return requiredRoles.includes(user.role);
+    // Maintenant request.user existe forcément
+    return requiredRoles.includes(request.user.role);
 
     /* FINAL VERSION  when auth is set up
 

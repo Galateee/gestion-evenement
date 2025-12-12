@@ -13,8 +13,8 @@ export class CreateEventDto {
   @IsEnum(EventCategory)
   category: EventCategory;
 
-  @IsString()
-  organizerId: string;
+  // @IsString()
+  // organizerId: string;
 
   @IsDateString()
   startDate: string;
