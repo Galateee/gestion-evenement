@@ -5,6 +5,7 @@ import { Event } from '../entities/event.entity';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { UpdateEventDto } from '../dto/update-event.dto';
 import { FilterEventDto } from '../dto/filter-event.dto';
+import { EventStatus } from '../../../../shared/enums';
 
 @Injectable()
 export class EventsService {
@@ -101,5 +102,24 @@ export class EventsService {
         if (result.affected === 0) {
             throw new NotFoundException(`Event with ID ${id} not found`);
         }
+    }
+        
+    async publish(id: string): Promise<Event> {
+        const event = await this.findOne(id);
+        event.status = EventStatus.PUBLISHED;
+        return this.eventRepository.save(event);
+    }
+
+    async cancel(id: string): Promise<Event> {
+        const event = await this.findOne(id);
+        event.status = EventStatus.CANCELLED;
+        return this.eventRepository.save(event);
+    }
+
+    async markCompleted(id: string): Promise<Event> {
+        const event = await this.findOne(id);
+        event.status = EventStatus.COMPLETED;
+        event.availableSeats = 0;
+        return this.eventRepository.save(event);
     }
 }

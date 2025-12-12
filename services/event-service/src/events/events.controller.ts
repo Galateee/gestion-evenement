@@ -39,4 +39,21 @@ export class EventsController {
     remove(@Param('id') id: string) {
         return this.eventsService.remove(id);
     }
+    @Patch(':id/publish')
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN)
+  publish(@Param('id') id: string) {
+    return this.eventsService.publish(id);
+  }
+
+  @Patch(':id/cancel')
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN)
+  cancel(@Param('id') id: string) {
+    return this.eventsService.cancel(id);
+  }
+
+  @Patch(':id/soldout')
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN)
+  markSoldOut(@Param('id') id: string) {
+    return this.eventsService.markCompleted(id);
+  }
 }

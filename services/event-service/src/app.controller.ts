@@ -42,6 +42,23 @@ export class AppController {
                     <b>/events/:id</b> 
                     <br><small>👉 Supprime un événement</small>
                 </li>
+                <li style="margin-bottom: 10px;">
+                    <span style="background: #fca130; color: white; padding: 2px 6px; border-radius: 4px;">PATCH</span>
+                    <b>/events/:id/publish</b> 
+                    <br><small>👉 Publie un événement (status = PUBLISHED)</small>
+                </li>
+
+                <li style="margin-bottom: 10px;">
+                    <span style="background: #fca130; color: white; padding: 2px 6px; border-radius: 4px;">PATCH</span>
+                    <b>/events/:id/cancel</b> 
+                    <br><small>👉 Annule un événement (status = CANCELLED)</small>
+                </li>
+
+                <li style="margin-bottom: 10px;">
+                    <span style="background: #fca130; color: white; padding: 2px 6px; border-radius: 4px;">PATCH</span>
+                    <b>/events/:id/complete</b> 
+                    <br><small>👉 Marque un événement comme terminé (status = COMPLETED, places restantes = 0)</small>
+                </li>
             </ul>
         </div>
         `;
