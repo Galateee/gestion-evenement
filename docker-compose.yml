@@ -116,6 +116,9 @@ services:
       BCRYPT_ROUNDS: 10
     ports:
       - "3005:3005"
+    volumes:
+      - ./services/user-service/src:/app/src:ro
+      - ./services/user-service/prisma:/app/prisma:ro
     depends_on:
       postgres-users:
         condition: service_healthy
