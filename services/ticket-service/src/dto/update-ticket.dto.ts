@@ -1,5 +1,12 @@
-import { IsEnum, IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
-import { TicketStatus, TicketType } from '../../../../shared/enums/index.js';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
+import { TicketStatus, TicketType } from './../../../../shared/enums/index';
 
 export class UpdateTicketDto {
   @IsOptional()

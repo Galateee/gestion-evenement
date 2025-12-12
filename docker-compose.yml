@@ -152,8 +152,8 @@ services:
 
   ticket-service:
     build:
-      context: ./services/ticket-service
-      dockerfile: DockerFile
+      context: .
+      dockerfile: services/ticket-service/DockerFile
     container_name: ticket-service
     environment:
       NODE_ENV: development
@@ -167,6 +167,8 @@ services:
       RABBITMQ_QUEUE: ticket-service
     ports:
       - "3002:3002"
+    volumes:
+    - ./services/ticket-service:/usr/src/app
     depends_on:
       postgres-tickets:
         condition: service_healthy

@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import { TicketType } from '../../../../shared/enums/index.js';
+import { TicketType } from './../../../../shared/enums/index';
 
 export class CreateTicketDto {
   @IsUUID()

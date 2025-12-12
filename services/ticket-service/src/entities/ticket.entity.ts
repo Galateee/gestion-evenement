@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TicketStatus, TicketType } from '../../../../shared/enums/index.js';
+import { TicketStatus, TicketType } from './../../../../shared/enums/index';
 
 @Entity('tickets')
 export class Ticket {
