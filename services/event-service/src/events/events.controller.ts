@@ -61,4 +61,9 @@ export class EventsController {
   complete(@Param('id') id: string, @Req() req: any) {
     return this.eventsService.markCompleted(id, req.user);
   }
+
+  @Get('upcoming')
+  findUpcoming() {
+    return this.eventsService.findUpcoming();
+}
 }

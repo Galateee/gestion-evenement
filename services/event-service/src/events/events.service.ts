@@ -153,4 +153,14 @@ export class EventsService {
         event.availableSeats = 0;
         return this.eventRepository.save(event);
     }
+    // for futur event listing
+    async findUpcoming(): Promise<Event[]> {
+        const now = new Date();
+
+        return this.eventRepository
+            .createQueryBuilder('event')
+            .where('event.startDate > :now', { now })
+            .orderBy('event.startDate', 'ASC')
+            .getMany();
+    }
 }
