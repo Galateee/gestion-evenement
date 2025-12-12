@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req, } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { UpdateEventDto } from '../dto/update-event.dto';
@@ -19,7 +10,7 @@ import { UserRole } from '../../../../shared/enums';
 @Controller('events')
 @UseGuards(RolesGuard)
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+  constructor(private readonly eventsService: EventsService) { }
 
   @Post()
   @Roles(UserRole.ORGANIZER, UserRole.ADMIN)
@@ -74,5 +65,5 @@ export class EventsController {
   @Get('upcoming')
   findUpcoming() {
     return this.eventsService.findUpcoming();
-}
+  }
 }
