@@ -1,3 +1,8 @@
+/**
+ * DTO pour la mise à jour d'un ticket
+ * Tous les champs sont optionnels pour permettre des modifications partielles
+ * Permet de changer le type, la quantité, le statut et le QR code
+ */
 import {
   IsEnum,
   IsInt,

@@ -1,3 +1,8 @@
+/**
+ * Entité Ticket - Représente une réservation de billets pour un événement
+ * Gère le cycle de vie complet : RESERVED → PENDING_PAYMENT → PAID → VALIDATED → USED
+ * Stocke les informations de quantité, prix total, QR code et expiration
+ */
 import {
   Entity,
   PrimaryGeneratedColumn,
