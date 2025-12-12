@@ -14,4 +14,10 @@ export class AuthController {
     login(@Body() body) {
         return this.authService.login(body);
     }
+
+    @Post('logout') 
+    logout() {
+        return { message: 'Logged out successfully' };
+    }
+
 }
