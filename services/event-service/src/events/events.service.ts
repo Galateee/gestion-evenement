@@ -31,11 +31,17 @@ export class EventsService {
 
         if (search) {
             query.andWhere(
-                '(event.title LIKE :search OR event.description LIKE :search)',
+                `(
+                event.title LIKE :search OR
+                event.description LIKE :search OR
+                event.location LIKE :search OR
+                event.organizerId LIKE :search OR
+                event.category LIKE :search OR
+                event.status LIKE :search
+                )`,
                 { search: `%${search}%` },
             );
         }
-
         if (category) {
             query.andWhere('event.category = :category', { category });
         }
