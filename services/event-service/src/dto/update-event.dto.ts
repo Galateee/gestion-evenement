@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsDateString, IsNumber, IsOptional, Min, MaxLength } from 'class-validator';
+import { IsString, IsEnum, IsDateString, IsNumber, IsOptional, Min, MaxLength, isString } from 'class-validator';
 import { EventCategory, EventStatus } from './../../../../shared/enums/index';
 
 export class UpdateEventDto {
@@ -15,6 +15,9 @@ export class UpdateEventDto {
   @IsOptional()
   @IsEnum(EventCategory)
   category?: EventCategory;
+
+  @IsString()
+  organizerId: string;
 
   @IsOptional()
   @IsEnum(EventStatus)

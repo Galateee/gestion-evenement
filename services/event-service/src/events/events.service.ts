@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from '../entities/event.entity';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { UpdateEventDto } from '../dto/update-event.dto';
 import { FilterEventDto } from '../dto/filter-event.dto';
+import { EventStatus, UserRole } from '../../../../shared/enums';
+
+interface CurrentUser {
+  id: string;
+  role: UserRole;
+}
 
 @Injectable()
 export class EventsService {
@@ -13,14 +19,14 @@ export class EventsService {
         private readonly eventRepository: Repository<Event>,
     ) { }
 
-    async create(createEventDto: CreateEventDto): Promise<Event> {
+    async create(createEventDto: CreateEventDto, currentUser: CurrentUser,): Promise<Event> {
         const event = this.eventRepository.create({
             ...createEventDto,
-            // À la création, les places disponibles sont égales à la capacité
+            organizerId: currentUser.id,
             availableSeats: createEventDto.capacity,
         });
         return this.eventRepository.save(event);
-    }
+  }
 
     async findAll(filterDto: FilterEventDto) {
         const { search, category, status, location, startDate, endDate, page, limit } = filterDto;
@@ -30,11 +36,17 @@ export class EventsService {
 
         if (search) {
             query.andWhere(
-                '(event.title LIKE :search OR event.description LIKE :search)',
+                `(
+                event.title LIKE :search OR
+                event.description LIKE :search OR
+                event.location LIKE :search OR
+                event.organizerId LIKE :search OR
+                event.category LIKE :search OR
+                event.status LIKE :search
+                )`,
                 { search: `%${search}%` },
             );
         }
-
         if (category) {
             query.andWhere('event.category = :category', { category });
         }
@@ -83,23 +95,72 @@ export class EventsService {
         return event;
     }
 
-    async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
-        const event = await this.eventRepository.preload({
-            id,
-            ...updateEventDto,
-        });
+    // check if user is owner of the event or admin
+    private checkOwnerOrAdmin(event: Event, user: CurrentUser) {
+        const isAdmin = user.role === UserRole.ADMIN;
+        const isOwner = event.organizerId === user.id;
 
-        if (!event) {
-            throw new NotFoundException(`Event with ID ${id} not found`);
+        if (!isAdmin && !isOwner) {
+        throw new ForbiddenException(
+            'Vous ne pouvez modifier que vos propres événements.',
+        );
         }
+    }
 
+    async update(id: string, updateEventDto: UpdateEventDto, currentUser: CurrentUser,): Promise<Event> {
+        const event = await this.findOne(id);
+
+        this.checkOwnerOrAdmin(event, currentUser);
+
+        Object.assign(event, updateEventDto);
+
+        return this.eventRepository.save(event);
+    } 
+
+    async remove(id: string, currentUser: CurrentUser): Promise<void> {
+        const event = await this.findOne(id);
+
+        this.checkOwnerOrAdmin(event, currentUser);
+
+        await this.eventRepository.delete(id);
+    }
+
+    async publish(id: string, currentUser: CurrentUser): Promise<Event> {
+        const event = await this.findOne(id);
+
+        this.checkOwnerOrAdmin(event, currentUser);
+
+        event.status = EventStatus.PUBLISHED;
         return this.eventRepository.save(event);
     }
 
-    async remove(id: string): Promise<void> {
-        const result = await this.eventRepository.delete(id);
-        if (result.affected === 0) {
-            throw new NotFoundException(`Event with ID ${id} not found`);
-        }
+    async cancel(id: string, currentUser: CurrentUser): Promise<Event> {
+        const event = await this.findOne(id);
+
+        this.checkOwnerOrAdmin(event, currentUser);
+
+        event.status = EventStatus.CANCELLED;
+        return this.eventRepository.save(event);
+    }
+
+    async markCompleted(id: string, currentUser: CurrentUser,): Promise<Event> 
+    {
+        const event = await this.findOne(id);
+
+        this.checkOwnerOrAdmin(event, currentUser);
+
+        event.status = EventStatus.COMPLETED;
+        event.availableSeats = 0;
+        return this.eventRepository.save(event);
+    }
+    // for futur event listing
+    async findUpcoming(): Promise<Event[]> {
+        const now = new Date();
+
+        return this.eventRepository
+            .createQueryBuilder('event')
+            .where('event.startDate > :now', { now })
+            .orderBy('event.startDate', 'ASC')
+            .getMany();
     }
 }
