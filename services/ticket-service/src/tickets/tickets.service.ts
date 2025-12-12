@@ -21,6 +21,7 @@ import { TicketStatus } from './../../../../shared/enums/index';
 import { createReservedTicket } from '../entities/ticket.factory';
 import { canTransition } from '../entities/ticket-status';
 import { EventClient } from '../events/event.client';
+import { EventPublisher } from '../events/event.publisher';
 
 @Injectable()
 export class TicketsService {
@@ -28,6 +29,7 @@ export class TicketsService {
     @InjectRepository(Ticket)
     private readonly repo: Repository<Ticket>,
     private readonly eventClient: EventClient,
+    private readonly eventPublisher: EventPublisher,
   ) {}
 
   async create(
@@ -61,7 +63,20 @@ export class TicketsService {
       quantity: dto.quantity,
       unitPrice,
     });
-    return this.repo.save(ticket);
+    const savedTicket = await this.repo.save(ticket);
+
+    this.eventPublisher.publishTicketBooked({
+      eventName: 'ticket.booked',
+      ticketId: savedTicket.id,
+      eventId: savedTicket.eventId,
+      userId: savedTicket.userId,
+      quantity: savedTicket.quantity,
+      totalPrice: savedTicket.totalPrice,
+      ticketType: savedTicket.ticketType,
+      timestamp: new Date(),
+    });
+
+    return savedTicket;
   }
 
   async findAll(): Promise<Ticket[]> {
@@ -117,7 +132,17 @@ export class TicketsService {
       throw new BadRequestException('Cannot cancel from current status');
     }
     ticket.status = TicketStatus.CANCELLED;
-    return this.repo.save(ticket);
+    const cancelledTicket = await this.repo.save(ticket);
+
+    this.eventPublisher.publishTicketCancelled({
+      eventName: 'ticket.cancelled',
+      ticketId: cancelledTicket.id,
+      eventId: cancelledTicket.eventId,
+      userId: cancelledTicket.userId,
+      timestamp: new Date(),
+    });
+
+    return cancelledTicket;
   }
 
   private async countActiveTicketsForEvent(eventId: string): Promise<number> {
