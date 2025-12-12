@@ -81,8 +81,8 @@ services:
     image: postgres:15
     container_name: postgres-users
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-pguser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      POSTGRES_USER: ${DATABASE_USER:-root}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-root}
       POSTGRES_DB: user_db
     ports:
       - "5436:5432"
@@ -105,16 +105,20 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3005
+      DATABASE_URL: postgresql://${DATABASE_USER:-root}:${DATABASE_PASSWORD:-root}@postgres-users:5432/user_db
       DATABASE_HOST: postgres-users
       DATABASE_PORT: 5432
-      DATABASE_USER: ${POSTGRES_USER:-pguser}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-pgpass}
+      DATABASE_USER: ${DATABASE_USER:-root}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-root}
       DATABASE_NAME: user_db
       JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
       JWT_EXPIRES_IN: 7d
       BCRYPT_ROUNDS: 10
     ports:
       - "3005:3005"
+    volumes:
+      - ./services/user-service/src:/app/src:ro
+      - ./services/user-service/prisma:/app/prisma:ro
     depends_on:
       postgres-users:
         condition: service_healthy
