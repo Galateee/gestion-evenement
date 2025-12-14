@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# Installation de bash pour les scripts
+RUN apk add --no-cache bash
+
 WORKDIR /app
 
 # Copier les fichiers de configuration package
@@ -14,10 +17,21 @@ RUN npm install
 COPY prisma ./prisma
 RUN npx prisma generate
 
+# Copier les scripts wait-for depuis scripts/
+COPY scripts ./scripts
+RUN chmod +x ./scripts/*.sh
+
+# Copier le script d'entrypoint depuis script/
+COPY script/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 # Copier tout le code source
 COPY src ./src
 
 EXPOSE 3005
 
-# Utiliser le mode développement avec watch
+# Utiliser le script d'entrypoint
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
+# Utilisation du mode développement 
 CMD ["npm", "run", "start:dev"]
