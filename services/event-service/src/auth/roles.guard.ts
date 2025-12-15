@@ -33,7 +33,22 @@ export class RolesGuard implements CanActivate {
       };
     }
 
-    // Maintenant request.user existe forcément
+    // Si l'user existe mais n'a pas de rôle, on lui assigne ADMIN par défaut (temporaire)
+    if (request.user && !request.user.role) {
+      console.log('🔧 Assignation du rôle ADMIN par défaut à l\'utilisateur:', request.user.userId || request.user.id);
+      request.user.role = UserRole.ADMIN;
+      
+      // Normaliser l'ID utilisateur pour le service
+      if (request.user.userId && !request.user.id) {
+        request.user.id = request.user.userId;
+        console.log('🔧 ID utilisateur normalisé:', request.user.id);
+      }
+    }
+
+    console.log('🔐 Utilisateur final:', request.user);
+    console.log('🔐 Vérification:', requiredRoles.includes(request.user.role));
+
+    // Maintenant request.user existe forcément avec un rôle
     return requiredRoles.includes(request.user.role);
 
     /* FINAL VERSION  when auth is set up

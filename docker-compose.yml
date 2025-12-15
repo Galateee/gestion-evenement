@@ -141,10 +141,10 @@ services:
       DATABASE_NAME: event_db
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
       RABBITMQ_QUEUE: event-service
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+      USER_SERVICE_URL: http://user-service:3005
     ports:
       - "3001:3001"
-    volumes:
-    - ./services/event-service:/usr/src/app
     depends_on:
       postgres-events:
         condition: service_healthy

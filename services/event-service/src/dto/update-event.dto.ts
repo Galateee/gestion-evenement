@@ -17,6 +17,7 @@ export class UpdateEventDto {
   category?: EventCategory;
 
   @IsString()
+  @IsOptional()
   organizerId: string;
 
   @IsOptional()
