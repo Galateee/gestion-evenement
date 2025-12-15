@@ -36,6 +36,6 @@ export class UpdateTicketDto {
   eventId?: string;
 
   @IsOptional()
-  @IsUUID('all')
+  @IsString()
   userId?: string;
 }
