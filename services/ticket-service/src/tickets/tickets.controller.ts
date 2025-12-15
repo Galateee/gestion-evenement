@@ -25,7 +25,7 @@ import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { UpdateTicketDto } from '../dto/update-ticket.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import type { Request } from 'express';
+import { CurrentUser } from '../auth/user.decorator';
 
 @Controller('tickets')
 export class TicketsController {
@@ -33,11 +33,14 @@ export class TicketsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() dto: CreateTicketDto, @Req() req: Request) {
-    const mockUserId = dto.userId ?? '550e8400-e29b-41d4-a716-446655440000';
+  async create(
+    @Body() dto: CreateTicketDto,
+    @CurrentUser('userId') userId: string,
+    @Req() req: any,
+  ) {
     const mockUnitPrice = 10.0;
     const token = req.headers.authorization?.replace('Bearer ', '') || '';
-    return this.service.create(dto, mockUserId, mockUnitPrice, token);
+    return this.service.create(dto, userId, mockUnitPrice, token);
   }
 
   @Get()

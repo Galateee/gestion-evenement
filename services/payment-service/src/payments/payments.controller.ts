@@ -14,6 +14,7 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/user.decorator';
 
 @Controller('payments')
 export class PaymentsController {
@@ -35,6 +36,12 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.paymentsService.findOne(id);
+  }
+
+  @Get('user/me')
+  @UseGuards(JwtAuthGuard)
+  findMyPayments(@CurrentUser('userId') userId: string) {
+    return this.paymentsService.findByUserId(userId);
   }
 
   @Get('user/:userId')

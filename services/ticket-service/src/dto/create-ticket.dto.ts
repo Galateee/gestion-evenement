@@ -3,7 +3,14 @@
  * Valide les données d'entrée : eventId, type de ticket et quantité
  * userId optionnel (peut être fourni par l'API Gateway après authentification)
  */
-import { IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 import { TicketType } from './../../../../shared/enums/index';
 
 export class CreateTicketDto {
@@ -18,6 +25,6 @@ export class CreateTicketDto {
   quantity: number;
 
   @IsOptional()
-  @IsUUID('all')
+  @IsString()
   userId?: string;
 }

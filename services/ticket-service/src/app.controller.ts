@@ -53,6 +53,13 @@ export class AppController {
                     <br><small>👉 Supprime un billet spécifique</small>
                 </li>
             </ul>
+
+            <hr>
+            <h3>🔔 Événements RabbitMQ :</h3>
+            <ul>
+                <li><b>Consomme:</b> payment.initiated, payment.processed, payment.failed, payment.refunded</li>
+                <li><b>Publie:</b> ticket.booked, ticket.confirmed, ticket.cancelled</li>
+            </ul>
         </div>
         `;
   }

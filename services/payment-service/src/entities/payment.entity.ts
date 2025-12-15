@@ -20,7 +20,7 @@ export class Payment {
   @Column({ type: 'uuid' })
   ticketId: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'varchar' })
   userId: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

@@ -32,7 +32,7 @@ export class Event {
   })
   status: EventStatus;
 
-  @Column()
+  @Column({ type: 'varchar' })
   organizerId: string;
 
   @Column({ type: 'timestamp' })

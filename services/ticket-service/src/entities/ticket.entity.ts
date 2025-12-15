@@ -20,7 +20,7 @@ export class Ticket {
   @Column({ type: 'uuid' })
   eventId: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'varchar' })
   userId: string;
 
   @Column({ type: 'enum', enum: TicketType })

@@ -4,6 +4,7 @@
  */
 import {
   IsUUID,
+  IsString,
   IsNumber,
   IsEnum,
   IsPositive,
@@ -15,7 +16,7 @@ export class CreatePaymentDto {
   @IsUUID('all')
   ticketId: string;
 
-  @IsUUID('all')
+  @IsString()
   userId: string;
 
   @IsNumber()
