@@ -13,6 +13,13 @@ async function bootstrap() {
     transform: true,
   }));
 
+  // Activer CORS pour que la Gateway puisse charger le JSON
+  app.enableCors({
+    origin: '*', // En production, mettre l'URL de la Gateway
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  });
+
+
   const config = new DocumentBuilder()
     .setTitle('User Service API')
     .setDescription('Microservice for user management and authentication in the event platform')
