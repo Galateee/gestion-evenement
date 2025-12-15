@@ -49,12 +49,23 @@ export class AppModule implements NestModule {
       }))
       .forRoutes('notifications');
 
-    // Route vers le Service Utilisateurs (Auth & Users)
+    // Route Auth
     consumer
       .apply(createProxyMiddleware({
-        target: this.configService.get('USER_SERVICE_URL'), // http://localhost:3005
+        target: this.configService.get('USER_SERVICE_URL'),
+        changeOrigin: true,
+        pathRewrite: {
+          '^/': '/auth/',
+        },
+      }))
+      .forRoutes('auth');
+
+    // Route vers le Service Utilisateurs (Users)
+    consumer
+      .apply(createProxyMiddleware({
+        target: this.configService.get('USER_SERVICE_URL'),
         changeOrigin: true,
       }))
-      .forRoutes('users', 'auth');
+      .forRoutes('users');
   }
 }
