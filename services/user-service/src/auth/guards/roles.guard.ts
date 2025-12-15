@@ -30,13 +30,10 @@ export class RolesGuard implements CanActivate {
 
     if (!user) return false;
 
-    const roles = await this.prisma.userRole.findMany({
-      where: { userId: user.sub },
-      include: { role: true },
-    });
+  const userRoles: RoleName[] =
+  (user.roles ?? []).map((r) => r.role.name);
 
-    return roles.some((ur) =>
-      requiredRoles.includes(ur.role.name),
-    );
+return requiredRoles.some((role) => userRoles.includes(role));
+
   }
 }
