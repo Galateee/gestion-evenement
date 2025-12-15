@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { StringValue } from 'ms';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { StringValue } from 'ms';
       signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as StringValue },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController]
 })
 export class AuthModule {}

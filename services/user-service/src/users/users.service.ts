@@ -1,50 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  // GET /users/:id
-  async findById(id: string) {
+  async getUserById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
         roles: {
-          include: {
-            role: true,
+          select: {
+            role: { select: { name: true } },
           },
         },
       },
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
-  async update(
-    id: string,
-    data: {
-      email?: string;
-      name?: string;
-    },
-  ) {
-    await this.findById(id); 
+
+  async updateUser(id: string, dto: UpdateUserDto) {
+    // vérifie si user existe
+    const existing = await this.prisma.user.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('User not found');
 
     return this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        email: dto.email,
+        name: dto.name,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
-  async remove(id: string) {
-    await this.findById(id);
-    await this.prisma.userRole.deleteMany({
-      where: { userId: id },
-    });
-    return this.prisma.user.delete({
-      where: { id },
-    });
+
+  async deleteUser(id: string) {
+    const existing = await this.prisma.user.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('User not found');
+
+    await this.prisma.user.delete({ where: { id } });
+    return { ok: true };
   }
 }
