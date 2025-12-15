@@ -17,21 +17,18 @@ RUN npm install
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# Copier les scripts wait-for depuis scripts/
-COPY scripts ./scripts
-RUN chmod +x ./scripts/*.sh
-
-# Copier le script d'entrypoint depuis script/
-COPY script/docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x ./docker-entrypoint.sh
 
 # Copier tout le code source
 COPY src ./src
 
 EXPOSE 3005
 
-# Utiliser le script d'entrypoint
-ENTRYPOINT ["./docker-entrypoint.sh"]
+# Copier les scripts d'entrypoint et utilitaires dans /app
+COPY script ./script
+RUN chmod +x ./script/*.sh
+
+# s'assurer que l'image utilise le script d'entrypoint
+ENTRYPOINT ["./script/docker-entrypoint.sh"]
 
 # Utilisation du mode développement 
 CMD ["npm", "run", "start:dev"]
