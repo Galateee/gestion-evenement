@@ -5,18 +5,33 @@
  */
 import { TicketStatus } from './../../../../shared/enums/index';
 
+/**
+ * Transitions autorisées selon le diagramme de machine à états
+ *
+ * Flow nominal : RESERVED → PENDING_PAYMENT → PAID → VALIDATED → USED
+ *
+ * Cas d'échec possibles :
+ * - RESERVED → CANCELLED (annulation avant paiement)
+ * - PENDING_PAYMENT → EXPIRED (délai de paiement expiré)
+ * - PENDING_PAYMENT → CANCELLED (annulation pendant l'attente)
+ * - PAID → CANCELLED (demande de remboursement)
+ * - VALIDATED → CANCELLED (annulation avant utilisation)
+ */
 const allowedTransitions: Record<TicketStatus, TicketStatus[]> = {
   [TicketStatus.RESERVED]: [
     TicketStatus.PENDING_PAYMENT,
     TicketStatus.CANCELLED,
-    TicketStatus.EXPIRED,
   ],
   [TicketStatus.PENDING_PAYMENT]: [
     TicketStatus.PAID,
-    TicketStatus.CANCELLED,
     TicketStatus.EXPIRED,
+    TicketStatus.CANCELLED,
   ],
-  [TicketStatus.PAID]: [TicketStatus.VALIDATED, TicketStatus.CANCELLED],
+  [TicketStatus.PAID]: [
+    TicketStatus.VALIDATED,
+    TicketStatus.EXPIRED,
+    TicketStatus.CANCELLED,
+  ],
   [TicketStatus.VALIDATED]: [TicketStatus.USED, TicketStatus.CANCELLED],
   [TicketStatus.USED]: [],
   [TicketStatus.CANCELLED]: [],

@@ -22,6 +22,7 @@ import { createReservedTicket } from '../entities/ticket.factory';
 import { canTransition } from '../entities/ticket-status';
 import { EventClient } from '../events/event.client';
 import { EventPublisher } from '../events/event.publisher';
+import { generateQRCode } from '../utils/qr-code.generator';
 
 @Injectable()
 export class TicketsService {
@@ -64,6 +65,14 @@ export class TicketsService {
       unitPrice,
     });
     const savedTicket = await this.repo.save(ticket);
+
+    const qrCode = await generateQRCode(
+      savedTicket.id,
+      savedTicket.eventId,
+      savedTicket.userId,
+    );
+    savedTicket.qrCode = qrCode;
+    await this.repo.save(savedTicket);
 
     this.eventPublisher.publishTicketBooked({
       eventName: 'ticket.booked',
@@ -115,6 +124,17 @@ export class TicketsService {
     await this.repo.remove(ticket);
   }
 
+  async setAsPendingPayment(id: string): Promise<Ticket> {
+    const ticket = await this.findOne(id);
+    if (!canTransition(ticket.status, TicketStatus.PENDING_PAYMENT)) {
+      throw new BadRequestException(
+        'Cannot set as pending payment from current status',
+      );
+    }
+    ticket.status = TicketStatus.PENDING_PAYMENT;
+    return this.repo.save(ticket);
+  }
+
   async confirmPayment(id: string): Promise<Ticket> {
     const ticket = await this.findOne(id);
     if (!canTransition(ticket.status, TicketStatus.PAID)) {
@@ -123,6 +143,17 @@ export class TicketsService {
       );
     }
     ticket.status = TicketStatus.PAID;
+
+    // Générer/Renouveler le QR code au paiement confirmé
+    if (!ticket.qrCode) {
+      const qrCode = await generateQRCode(
+        ticket.id,
+        ticket.eventId,
+        ticket.userId,
+      );
+      ticket.qrCode = qrCode;
+    }
+
     return this.repo.save(ticket);
   }
 

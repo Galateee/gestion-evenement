@@ -184,8 +184,8 @@ services:
 
   payment-service:
     build:
-      context: ./services/payment-service
-      dockerfile: DockerFile
+      context: .
+      dockerfile: services/payment-service/DockerFile
     container_name: payment-service
     environment:
       NODE_ENV: development

@@ -14,8 +14,8 @@ import { EventConsumer } from '../events/event.consumer';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ticket]), EventsModule],
-  providers: [TicketsService, EventConsumer],
-  controllers: [TicketsController],
+  providers: [TicketsService],
+  controllers: [TicketsController, EventConsumer],
   exports: [TicketsService],
 })
 export class TicketsModule {}

@@ -29,7 +29,7 @@ export class TicketsController {
 
   @Post()
   async create(@Body() dto: CreateTicketDto) {
-    const mockUserId = dto.userId ?? '00000000-0000-0000-0000-000000000001';
+    const mockUserId = dto.userId ?? '550e8400-e29b-41d4-a716-446655440000';
     const mockUnitPrice = 10.0;
     return this.service.create(dto, mockUserId, mockUnitPrice);
   }
@@ -58,6 +58,17 @@ export class TicketsController {
   @Post(':id/confirm-payment')
   async confirmPayment(@Param('id') id: string) {
     return this.service.confirmPayment(id);
+  }
+
+  @Get(':id/qrcode')
+  async getQRCode(@Param('id') id: string) {
+    const ticket = await this.service.findOne(id);
+    return {
+      ticketId: ticket.id,
+      qrCode: ticket.qrCode,
+      status: ticket.status,
+      eventId: ticket.eventId,
+    };
   }
 
   @Post(':id/cancel')
