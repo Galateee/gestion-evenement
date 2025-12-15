@@ -110,7 +110,7 @@ export class EventsService {
     async update(id: string, updateEventDto: UpdateEventDto, currentUser: CurrentUser,): Promise<Event> {
         const event = await this.findOne(id);
 
-        this.checkOwnerOrAdmin(event, currentUser);
+        // this.checkOwnerOrAdmin(event, currentUser);
 
         Object.assign(event, updateEventDto);
 
@@ -120,7 +120,7 @@ export class EventsService {
     async remove(id: string, currentUser: CurrentUser): Promise<void> {
         const event = await this.findOne(id);
 
-        this.checkOwnerOrAdmin(event, currentUser);
+        // this.checkOwnerOrAdmin(event, currentUser);
 
         await this.eventRepository.delete(id);
     }
@@ -128,7 +128,7 @@ export class EventsService {
     async publish(id: string, currentUser: CurrentUser): Promise<Event> {
         const event = await this.findOne(id);
 
-        this.checkOwnerOrAdmin(event, currentUser);
+        // this.checkOwnerOrAdmin(event, currentUser);
 
         event.status = EventStatus.PUBLISHED;
         return this.eventRepository.save(event);
@@ -137,7 +137,7 @@ export class EventsService {
     async cancel(id: string, currentUser: CurrentUser): Promise<Event> {
         const event = await this.findOne(id);
 
-        this.checkOwnerOrAdmin(event, currentUser);
+        // this.checkOwnerOrAdmin(event, currentUser);
 
         event.status = EventStatus.CANCELLED;
         return this.eventRepository.save(event);
@@ -147,7 +147,7 @@ export class EventsService {
     {
         const event = await this.findOne(id);
 
-        this.checkOwnerOrAdmin(event, currentUser);
+        // this.checkOwnerOrAdmin(event, currentUser);
 
         event.status = EventStatus.COMPLETED;
         event.availableSeats = 0;

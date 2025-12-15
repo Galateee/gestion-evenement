@@ -3,6 +3,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { EventCategory, EventStatus } from './../../../../shared/enums/index';
 
+
 export class FilterEventDto {
   @ApiPropertyOptional({
     description: 'Recherche textuelle (titre ou description)',

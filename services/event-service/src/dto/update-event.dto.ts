@@ -27,6 +27,7 @@ export class UpdateEventDto {
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
   @IsString()
+  @IsOptional()
   organizerId: string;
 
   @ApiPropertyOptional({ enum: EventStatus, description: "Nouveau statut de l'événement" })
