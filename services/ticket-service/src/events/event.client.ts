@@ -16,14 +16,22 @@ export interface EventDetails {
 export class EventClient {
   private readonly logger = new Logger(EventClient.name);
 
-  async getEventDetails(eventId: string): Promise<EventDetails> {
+  async getEventDetails(
+    eventId: string,
+    token?: string,
+  ): Promise<EventDetails> {
     try {
       const eventServiceUrl =
         process.env.EVENT_SERVICE_URL || 'http://event-service:3001';
       const url = `${eventServiceUrl}/events/${eventId}`;
 
       this.logger.debug(`Fetching event from: ${url}`);
-      const response = await axios.get<any>(url);
+      this.logger.debug(
+        `Token présent: ${!!token}, Token: ${token ? token.substring(0, 20) + '...' : 'aucun'}`,
+      );
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      this.logger.debug(`Headers: ${JSON.stringify(headers)}`);
+      const response = await axios.get<any>(url, { headers });
 
       this.logger.debug(`Event response: ${JSON.stringify(response.data)}`);
 
@@ -46,8 +54,8 @@ export class EventClient {
     }
   }
 
-  async getAvailableSeats(eventId: string): Promise<number> {
-    const event = await this.getEventDetails(eventId);
+  async getAvailableSeats(eventId: string, token?: string): Promise<number> {
+    const event = await this.getEventDetails(eventId, token);
     return event.availableSeats;
   }
 }

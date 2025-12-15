@@ -32,6 +32,19 @@ export class EventConsumer {
     }
   }
 
+  @EventPattern('payment.initiated')
+  async handlePaymentInitiated(@Payload() event: any) {
+    this.logger.log(`Received payment.initiated for ticket ${event.ticketId}`);
+    try {
+      await this.ticketsService.setAsPendingPayment(event.ticketId);
+      this.logger.log(`Ticket ${event.ticketId} marked as PENDING_PAYMENT`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to process payment.initiated: ${(error as Error).message}`,
+      );
+    }
+  }
+
   @EventPattern('payment.failed')
   async handlePaymentFailed(@Payload() event: any) {
     const paymentEvent = event as PaymentFailedEvent;
@@ -46,6 +59,21 @@ export class EventConsumer {
     } catch (error) {
       this.logger.error(
         `Failed to process payment.failed: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  @EventPattern('payment.refunded')
+  async handlePaymentRefunded(@Payload() event: any) {
+    this.logger.log(`Received payment.refunded for ticket ${event.ticketId}`);
+    try {
+      await this.ticketsService.cancel(event.ticketId);
+      this.logger.log(
+        `Ticket ${event.ticketId} cancelled due to payment refund`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to process payment.refunded: ${(error as Error).message}`,
       );
     }
   }

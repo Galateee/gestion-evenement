@@ -169,6 +169,8 @@ services:
       DATABASE_NAME: ticket_db
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
       RABBITMQ_QUEUE: ticket-service
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+      USER_SERVICE_URL: http://user-service:3005
     ports:
       - "3002:3002"
     volumes:
@@ -184,8 +186,8 @@ services:
 
   payment-service:
     build:
-      context: ./services/payment-service
-      dockerfile: DockerFile
+      context: .
+      dockerfile: services/payment-service/DockerFile
     container_name: payment-service
     environment:
       NODE_ENV: development
@@ -198,6 +200,8 @@ services:
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-user}:${RABBITMQ_PASS:-password}@rabbitmq:5672
       RABBITMQ_QUEUE: payment-service
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_dummy}
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+      USER_SERVICE_URL: http://user-service:3005
     ports:
       - "3003:3003"
     depends_on:

@@ -32,10 +32,10 @@ export class UpdateTicketDto {
   qrCode?: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all')
   eventId?: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all')
   userId?: string;
 }

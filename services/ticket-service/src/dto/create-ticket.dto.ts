@@ -7,7 +7,7 @@ import { IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import { TicketType } from './../../../../shared/enums/index';
 
 export class CreateTicketDto {
-  @IsUUID()
+  @IsUUID('all')
   eventId: string;
 
   @IsEnum(TicketType)
@@ -18,6 +18,6 @@ export class CreateTicketDto {
   quantity: number;
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all')
   userId?: string;
 }

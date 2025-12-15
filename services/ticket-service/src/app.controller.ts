@@ -4,7 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get()
   getHello(): string {
-    // Utilisation des backticks (`) pour écrire du HTML sur plusieurs lignes
     return `
         <div style="font-family: monospace; padding: 20px;">
             <h1 style="color: #4CAF50;">✅ Service Billeterie est en marche!</h1>

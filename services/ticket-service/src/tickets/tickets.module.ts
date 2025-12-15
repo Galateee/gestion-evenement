@@ -11,11 +11,13 @@ import { TicketsService } from './tickets.service';
 import { TicketsController } from './tickets.controller';
 import { EventsModule } from '../events/events.module';
 import { EventConsumer } from '../events/event.consumer';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ticket]), EventsModule],
-  providers: [TicketsService, EventConsumer],
-  controllers: [TicketsController],
+  providers: [TicketsService, AuthService, JwtAuthGuard],
+  controllers: [TicketsController, EventConsumer],
   exports: [TicketsService],
 })
 export class TicketsModule {}
