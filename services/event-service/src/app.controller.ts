@@ -1,10 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 @Controller()
+@ApiExcludeController()
 export class AppController {
-  @Get()
-  getHello(): string {
-    return `
+    @Get()
+    getHello(): string {
+        return `
         <div style="font-family: monospace; padding: 20px;">
             <h1 style="color: #4CAF50;">✅ Service Evénements est en marche!</h1>
             <hr>
@@ -67,5 +69,5 @@ export class AppController {
             </ul>
         </div>
         `;
-  }
+    }
 }
