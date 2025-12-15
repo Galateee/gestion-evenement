@@ -3,7 +3,8 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from 'src/auth/dto/signup.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-
+import { Param } from '@nestjs/common';
+import { AssignRoleDto } from './dto/assign-role.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -127,5 +128,15 @@ export class AuthController {
     logout() {
         return { message: 'Logged out successfully' };
     }
+  @Post('users/:id/role')
+  @ApiOperation({
+    summary: 'Assign a role to a user',
+    description: 'Assign a role (ADMIN / ORGANIZER / PARTICIPANT) to a user',
+  })
+  @ApiBody({ type: AssignRoleDto })
+  @ApiResponse({ status: 200, description: 'Role assigned' })
+  assignRole(@Param('id') id: string, @Body() dto: AssignRoleDto) {
+    return this.authService.assignRoleToUser(id, dto.role);
+  }
 
 }
