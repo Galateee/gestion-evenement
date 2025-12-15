@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from 'src/auth/dto/signup.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -127,5 +128,13 @@ export class AuthController {
     logout() {
         return { message: 'Logged out successfully' };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('verify')
+    verify(@Req() req) {
+        return req.user;
+    }
+  
+
 
 }
