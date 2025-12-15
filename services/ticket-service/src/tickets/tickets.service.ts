@@ -37,9 +37,11 @@ export class TicketsService {
     dto: CreateTicketDto,
     userId: string,
     unitPrice: number,
+    token?: string,
   ): Promise<Ticket> {
     const availableSeats = await this.eventClient.getAvailableSeats(
       dto.eventId,
+      token,
     );
     if (availableSeats < dto.quantity) {
       throw new BadRequestException(

@@ -82,25 +82,6 @@ export class EventsService {
       query.andWhere('event.startDate >= :startDate', { startDate });
     }
 
-    // async update(id: string, updateEventDto: UpdateEventDto, currentUser: CurrentUser,): Promise<Event> {
-    //     const event = await this.findOne(id);
-
-    //     // this.checkOwnerOrAdmin(event, currentUser);
-
-    //     Object.assign(event, updateEventDto);
-
-    //     return this.eventRepository.save(event);
-    // }
-
-    // async remove(id: string, currentUser: CurrentUser): Promise<void> {
-    //     const event = await this.findOne(id);
-
-    //     // this.checkOwnerOrAdmin(event, currentUser);
-
-    //     await this.eventRepository.delete(id);
-
-    // }
-
     if (endDate) {
       query.andWhere('event.endDate <= :endDate', { endDate });
     }
@@ -151,7 +132,7 @@ export class EventsService {
   ): Promise<Event> {
     const event = await this.findOne(id);
 
-    this.checkOwnerOrAdmin(event, currentUser);
+    // this.checkOwnerOrAdmin(event, currentUser);
 
     Object.assign(event, updateEventDto);
 
@@ -161,7 +142,7 @@ export class EventsService {
   async remove(id: string, currentUser: CurrentUser): Promise<void> {
     const event = await this.findOne(id);
 
-    this.checkOwnerOrAdmin(event, currentUser);
+    // this.checkOwnerOrAdmin(event, currentUser);
 
     await this.eventRepository.delete(id);
   }
